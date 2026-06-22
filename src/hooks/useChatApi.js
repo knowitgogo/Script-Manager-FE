@@ -5,6 +5,7 @@ import {
   selectInput,
   selectApiUrl,
   selectApiKey,
+  selectPageContext,
   addMessage,
   setInput,
   setIsLoading,
@@ -15,6 +16,7 @@ export function useChatApi() {
   const input = useSelector(selectInput);
   const apiUrl = useSelector(selectApiUrl);
   const apiKey = useSelector(selectApiKey);
+  const pageContext = useSelector(selectPageContext);
 
   const sendMessage = useCallback(
     async (customText) => {
@@ -34,6 +36,7 @@ export function useChatApi() {
       const finalUrl = apiKey ? `${cleanUrl}/${apiKey}` : cleanUrl;
 
       console.log("User entered input:", messageText);
+      console.log("Page context:", pageContext);
 
       dispatch(setIsLoading(true));
       try {
@@ -41,13 +44,15 @@ export function useChatApi() {
           finalUrl,
           {
             message: messageText,
+            pageContext: pageContext, // Include captured page context
+            contextId: pageContext?.id, // Include context ID for backend reference
           },
           {
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",
             },
-          },
+          }
         );
 
         console.log("Response status:", response.status);
@@ -72,7 +77,7 @@ export function useChatApi() {
         dispatch(setIsLoading(false));
       }
     },
-    [dispatch, input, apiUrl, apiKey],
+    [dispatch, input, apiUrl, apiKey, pageContext]
   );
 
   return { sendMessage };

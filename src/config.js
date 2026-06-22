@@ -13,18 +13,9 @@ export function getChatbotConfig() {
     }
   }
 
-  const baseUrl =
-    script?.dataset.apiUrl ||
-    script?.dataset.baseUrl ||
-    "http://localhost:5000/chat";
-
-  const cleanBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
-  const bundleUrl = apiKey ? `${cleanBaseUrl}/${apiKey}` : cleanBaseUrl;
-
-  const loader = document.createElement("script");
-  loader.src = bundleUrl;
-  loader.async = true;
-  document.body.appendChild(loader);
+  // Always use the Laravel backend API endpoint
+  // NOTE: data-api-url in HTML is for the widget loader script, NOT the chat API
+  const baseUrl = "http://127.0.0.1:8000/user/chatbot/message";
 
   return { apiUrl: baseUrl, apiKey };
 }

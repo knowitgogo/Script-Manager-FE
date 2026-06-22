@@ -11,6 +11,7 @@ import {
 } from "./store/chatSlice";
 import { useChatApi } from "./hooks/useChatApi";
 import { useChatPersistence } from "./hooks/useChatPersistence";
+import { usePageContext } from "./hooks/usePageContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
   const messages = useSelector(selectMessages);
 
   useChatPersistence();
+  usePageContext(); // Capture page context once on mount
   const { sendMessage } = useChatApi();
 
   function handleSend(customText) {
