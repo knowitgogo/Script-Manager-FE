@@ -34,11 +34,14 @@ export function useChatApi() {
 
       dispatch(setIsLoading(true));
       try {
-        const response = await fetch(finalUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: messageText }),
-        });
+        const response = await fetch(
+          "http://127.0.0.1:8000/user/chatbot/message",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: messageText }),
+          },
+        );
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
