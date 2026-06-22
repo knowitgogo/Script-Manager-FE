@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import {
   selectInput,
   selectApiUrl,
@@ -32,24 +33,35 @@ export function useChatApi() {
       const cleanUrl = apiUrl.endsWith("/") ? apiUrl.slice(0, -1) : apiUrl;
       const finalUrl = apiKey ? `${cleanUrl}/${apiKey}` : cleanUrl;
 
+      console.log("User entered input:", messageText);
+
       dispatch(setIsLoading(true));
       try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/user/chatbot/message",
+        const response = await axios.post(
+          finalUrl,
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: messageText }),
+            message: messageText,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
           },
         );
 
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        console.log("Response status:", response.status);
+        console.log("response", response.data);
 
-        const data = await response.json();
-        dispatch(
-          addMessage({ role: "bot", text: data.reply || "No reply received." }),
-        );
-      } catch {
+        // Handle plain text response from Laravel
+        const replyText =
+          typeof response.data === "string"
+            ? response.data
+            : response.data?.reply || "No reply received.";
+
+        dispatch(addMessage({ role: "bot", text: replyText }));
+      } catch (error) {
+        console.error("Chat API Error:", error);
         dispatch(
           addMessage({
             role: "bot",

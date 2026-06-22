@@ -16,7 +16,7 @@ const chatSlice = createSlice({
     input: "",
     isOpen: false,
     showEmojiPicker: false,
-    apiUrl: "http://localhost:5000/chat",
+    apiUrl: "http://127.0.0.1:8000/user/chatbot/message ",
     apiKey: null,
     isLoading: false,
   },
