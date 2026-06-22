@@ -1,0 +1,218 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px 12px;
+  background: #1a1a1a;
+  border-top: 1px solid rgba(29, 185, 84, 0.16);
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Light theme variant — white background for input module */
+.light {
+  background: #ffffff;
+  border-top-color: #d6f5e3;
+}
+
+/* ── Quick reply chips ── */
+.chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  color: black;
+}
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex: 0 0 auto;
+  padding: 5px 12px;
+  border: 1px solid rgba(29, 185, 84, 0.3);
+  border-radius: 999px;
+  background: rgba(29, 185, 84, 0.1);
+  color: #1db954;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  white-space: nowrap;
+  transition:
+    background-color 0.18s,
+    transform 0.18s;
+}
+.chip:hover {
+  background: rgba(29, 185, 84, 0.2);
+  transform: translateY(-1px);
+}
+
+/* In light theme, chips use green accent colors */
+.light .chip {
+  background: #e8f5e9;
+  color: #0f9d58;
+  border-color: #c8e6c9;
+}
+
+.light .chip:hover {
+  background: #c8e6c9;
+}
+
+/* ── Bottom row: capsule + send button side by side ── */
+.bottomRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Input capsule — rounded pill containing text field + emoji */
+.inputCapsule {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  padding: 4px 8px 4px 14px;
+  border: 1.5px solid rgba(29, 185, 84, 0.2);
+  border-radius: 999px;
+  background: #2a2a2a;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background-color 0.2s;
+}
+.inputCapsule:focus-within {
+  border-color: #1db954;
+  background: #2a2a2a;
+  box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.15);
+}
+
+/* In light theme, input capsule has white background and green tint border */
+.light .inputCapsule {
+  background: #ffffff;
+  border-color: #d6f5e3;
+}
+
+.light .inputCapsule:focus-within {
+  border-color: #0f9d58;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.15);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #e5e5e5;
+  font-family: inherit;
+}
+.input::placeholder {
+  color: #888888;
+}
+
+/* In light theme, input text is black */
+.light .input {
+  color: #111111;
+}
+.light .input::placeholder {
+  color: #9ca3af;
+}
+
+.emojiBtn {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.18s,
+    transform 0.18s;
+  color: #1db954;
+}
+.emojiBtn:hover {
+  background-color: rgba(29, 185, 84, 0.15);
+  transform: scale(1.1);
+}
+
+/* In light theme, emoji button uses deep green accent */
+.light .emojiBtn {
+  color: #0f9d58;
+}
+.light .emojiBtn:hover {
+  background-color: rgba(15, 157, 88, 0.1);
+}
+
+/* Send button — standalone, never clipped */
+.sendBtn {
+  flex: 0 0 auto;
+  height: 42px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 999px;
+  background: #1db954;
+  color: #0a0a0a;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: transform 0.18s linear;
+}
+.sendBtn:hover {
+  background: #17a04a;
+  transform: scale(1.1);
+}
+
+/* In light theme, send button is deep green with white text */
+.light .sendBtn {
+  background: #0f9d58;
+  color: #ffffff;
+}
+
+.light .sendBtn:hover {
+  background: #0b8a4b;
+}
+
+/* ── Emoji picker dropdown ── */
+.emojiPickerContainer {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: calc(100% + 6px);
+  z-index: 10000;
+  overflow: hidden;
+  border: 1px solid rgba(29, 185, 84, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  background: #1a1a1a;
+}
+
+.emojiPickerFallback {
+  padding: 20px 16px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.emojiPickerContainer :global(.EmojiPickerReact) {
+  --epr-emoji-size: 22px;
+  --epr-category-label-height: 26px;
+  font-family: inherit;
+}

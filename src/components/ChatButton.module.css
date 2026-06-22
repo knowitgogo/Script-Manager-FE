@@ -1,0 +1,32 @@
+.button {
+  min-width: 132px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 999px;
+  background: #1db954;
+  color: #0a0a0a;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: "Montserrat", sans-serif;
+  box-shadow: 0 14px 28px rgba(29, 185, 84, 0.32);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(29, 185, 84, 0.4);
+}
+
+/* Light theme variant — deep green background */
+.light {
+  background: #0f9d58;
+  color: #ffffff;
+  box-shadow: 0 14px 28px rgba(15, 157, 88, 0.32);
+}
+
+.light:hover {
+  box-shadow: 0 18px 34px rgba(15, 157, 88, 0.4);
+}
