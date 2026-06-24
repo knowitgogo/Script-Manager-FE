@@ -11,6 +11,7 @@ import {
   setInput,
   setIsLoading,
   setShowInput,
+  removeLastMessages,
 } from "../store/chatSlice";
 
 export function useChatApi() {
@@ -99,11 +100,12 @@ export function useChatApi() {
   // Function to regenerate the last response
   const regenerateResponse = useCallback(() => {
     if (lastUserMessage) {
-      // Remove the last bot message and regenerate
-      dispatch(setInput(lastUserMessage));
-      dispatch(setShowInput(true)); // Show input so user can edit if needed
+      // Remove the last messages from chat
+      dispatch(removeLastMessages());
+      // Resend the last user message to get a new response
+      sendMessage(lastUserMessage);
     }
-  }, [dispatch, lastUserMessage]);
+  }, [dispatch, lastUserMessage, sendMessage]);
 
   return { sendMessage, regenerateResponse };
 }

@@ -59,6 +59,37 @@ const chatSlice = createSlice({
       state.lastUserMessage = null;
       state.lastBotResponse = null;
     },
+    removeLastMessages(state) {
+      // Remove the last user and bot message pair
+      const msgCount = state.messages.length;
+      if (msgCount >= 2) {
+        // Check if last two messages are a user-bot pair
+        const lastMsg = state.messages[msgCount - 1];
+        const secondLastMsg = state.messages[msgCount - 2];
+        
+        if (lastMsg.role === "bot" && secondLastMsg.role === "user") {
+          // Remove both messages
+          state.messages.splice(-2, 2);
+        } else if (lastMsg.role === "user") {
+          // Only remove the last user message
+          state.messages.pop();
+        }
+      } else if (msgCount === 1) {
+        state.messages.pop();
+      }
+      
+      // Reset last messages tracking
+      const remainingCount = state.messages.length;
+      if (remainingCount >= 2) {
+        const lastMsg = state.messages[remainingCount - 1];
+        const secondLastMsg = state.messages[remainingCount - 2];
+        state.lastBotResponse = lastMsg.role === "bot" ? lastMsg.text : null;
+        state.lastUserMessage = secondLastMsg.role === "user" ? secondLastMsg.text : null;
+      } else {
+        state.lastUserMessage = null;
+        state.lastBotResponse = null;
+      }
+    },
     setIsLoading(state, action) {
       state.isLoading = action.payload;
     },
@@ -100,6 +131,7 @@ export const {
   setShowInput,
   setPageContext,
   clearPageContext,
+  removeLastMessages,
 } = chatSlice.actions;
 
 export const selectMessages = (state) => state.chat.messages;

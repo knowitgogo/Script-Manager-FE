@@ -8,6 +8,7 @@ import {
   selectLastBotResponse,
   setInput,
   setShowInput,
+  removeLastMessages,
 } from "../store/chatSlice";
 import { useTheme } from "../context/ThemeContext";
 
@@ -98,6 +99,9 @@ export function MessageInput({ onKeyDown, onSend, onRegenerate }) {
   // Quick action: Edit Previous Prompt
   const handleEditPrompt = () => {
     if (lastUserMessage) {
+      // Remove the last messages from chat
+      dispatch(removeLastMessages());
+      // Show input with the previous message for editing
       dispatch(setInput(lastUserMessage));
       dispatch(setShowInput(true));
     }
