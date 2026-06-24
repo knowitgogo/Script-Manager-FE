@@ -24,16 +24,25 @@ const chatSlice = createSlice({
     messages: loadMessages(),
     input: "",
     isOpen: false,
-    showEmojiPicker: false,
     apiUrl: "http://127.0.0.1:8000/user/chatbot/message",
     apiKey: null,
     isLoading: false,
     pageContext: loadPageContext(),
     pageContextId: loadPageContext()?.id || null,
+    showInput: true, // Whether to show the input area
+    lastUserMessage: null, // Store last user message for edit/regenerate
+    lastBotResponse: null, // Store last bot response for copy
   },
   reducers: {
     addMessage(state, action) {
       state.messages.push(action.payload);
+      
+      // Track last user and bot messages
+      if (action.payload.role === "user") {
+        state.lastUserMessage = action.payload.text;
+      } else if (action.payload.role === "bot") {
+        state.lastBotResponse = action.payload.text;
+      }
     },
     setInput(state, action) {
       state.input = action.payload;
@@ -41,18 +50,20 @@ const chatSlice = createSlice({
     toggleChat(state) {
       state.isOpen = !state.isOpen;
     },
-    setShowEmojiPicker(state, action) {
-      state.showEmojiPicker = action.payload;
-    },
     setConfig(state, action) {
       state.apiUrl = action.payload.apiUrl || state.apiUrl;
       state.apiKey = action.payload.apiKey || state.apiKey;
     },
     clearHistory(state) {
       state.messages = [];
+      state.lastUserMessage = null;
+      state.lastBotResponse = null;
     },
     setIsLoading(state, action) {
       state.isLoading = action.payload;
+    },
+    setShowInput(state, action) {
+      state.showInput = action.payload;
     },
     setPageContext(state, action) {
       state.pageContext = action.payload;
@@ -83,10 +94,10 @@ export const {
   addMessage,
   setInput,
   toggleChat,
-  setShowEmojiPicker,
   setConfig,
   clearHistory,
   setIsLoading,
+  setShowInput,
   setPageContext,
   clearPageContext,
 } = chatSlice.actions;
@@ -94,10 +105,12 @@ export const {
 export const selectMessages = (state) => state.chat.messages;
 export const selectInput = (state) => state.chat.input;
 export const selectIsOpen = (state) => state.chat.isOpen;
-export const selectShowEmojiPicker = (state) => state.chat.showEmojiPicker;
 export const selectApiUrl = (state) => state.chat.apiUrl;
 export const selectApiKey = (state) => state.chat.apiKey;
 export const selectIsLoading = (state) => state.chat.isLoading;
+export const selectShowInput = (state) => state.chat.showInput;
+export const selectLastUserMessage = (state) => state.chat.lastUserMessage;
+export const selectLastBotResponse = (state) => state.chat.lastBotResponse;
 export const selectPageContext = (state) => state.chat.pageContext;
 export const selectPageContextId = (state) => state.chat.pageContextId;
 

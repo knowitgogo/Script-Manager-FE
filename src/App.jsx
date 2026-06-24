@@ -7,7 +7,6 @@ import {
   selectMessages,
   toggleChat,
   clearHistory,
-  setShowEmojiPicker,
 } from "./store/chatSlice";
 import { useChatApi } from "./hooks/useChatApi";
 import { useChatPersistence } from "./hooks/useChatPersistence";
@@ -21,18 +20,16 @@ function App() {
 
   useChatPersistence();
   usePageContext(); // Capture page context once on mount
-  const { sendMessage } = useChatApi();
+  const { sendMessage, regenerateResponse } = useChatApi();
 
   function handleSend(customText) {
     sendMessage(typeof customText === "string" ? customText : undefined);
-    dispatch(setShowEmojiPicker(false));
   }
 
   function handleKeyDown(e) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
-      dispatch(setShowEmojiPicker(false));
     }
   }
 
@@ -54,6 +51,7 @@ function App() {
             onKeyDown={handleKeyDown}
             onSend={handleSend}
             onClear={() => dispatch(clearHistory())}
+            onRegenerate={regenerateResponse}
           />
         </div>
       )}

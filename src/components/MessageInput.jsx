@@ -1,45 +1,44 @@
-import { lazy, Suspense, useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./MessageInput.module.css";
 import {
-  selectShowEmojiPicker,
   selectInput,
-  setShowEmojiPicker,
+  selectShowInput,
+  selectLastUserMessage,
+  selectLastBotResponse,
   setInput,
+  setShowInput,
 } from "../store/chatSlice";
 import { useTheme } from "../context/ThemeContext";
 
-const EmojiPicker = lazy(() => import("emoji-picker-react"));
-
-export function MessageInput({ onKeyDown, onSend }) {
+export function MessageInput({ onKeyDown, onSend, onRegenerate }) {
   const dispatch = useDispatch();
-  const showEmojiPicker = useSelector(selectShowEmojiPicker);
   const input = useSelector(selectInput);
-  const wrapperRef = useRef(null);
+  const showInput = useSelector(selectShowInput);
+  const lastUserMessage = useSelector(selectLastUserMessage);
+  const lastBotResponse = useSelector(selectLastBotResponse);
   const inputRef = useRef(null);
 
   // Speech recognition state
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
 
-  // Consume theme context to apply light mode styles
   const { theme } = useTheme();
 
-  // Cleanup recognition on unmount
-  useState(() => {
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-    };
-  }, []);
+  // Focus textarea when input is shown
+  useEffect(() => {
+    if (showInput && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showInput]);
 
   const startListening = useCallback(() => {
-    // Check if browser supports SpeechRecognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.warn("[Chatbot Widget] Speech recognition not supported in this browser");
+      console.warn(
+        "[Chatbot Widget] Speech recognition not supported in this browser",
+      );
       return;
     }
 
@@ -52,8 +51,7 @@ export function MessageInput({ onKeyDown, onSend }) {
 
     recognition.onstart = () => {
       setIsListening(true);
-      dispatch(setInput("")); // Clear any existing text
-      console.log("[Chatbot Widget] Speech recognition started");
+      dispatch(setInput(""));
     };
 
     recognition.onresult = (event) => {
@@ -63,8 +61,6 @@ export function MessageInput({ onKeyDown, onSend }) {
 
     recognition.onend = () => {
       setIsListening(false);
-      console.log("[Chatbot Widget] Speech recognition ended");
-      // Note: We do NOT auto-send. User must click Send button.
     };
 
     recognition.onerror = (event) => {
@@ -83,115 +79,122 @@ export function MessageInput({ onKeyDown, onSend }) {
     setIsListening(false);
   }, []);
 
-  const handleEmojiClick = (emojiData) => {
-    dispatch(setInput(input + emojiData.emoji));
-    inputRef.current?.focus();
+  // Handle send with textarea
+  const handleSend = () => {
+    if (!input.trim()) return;
+    onSend();
   };
 
-  const toggleEmojiPicker = (e) => {
-    e.stopPropagation();
-    dispatch(setShowEmojiPicker(!showEmojiPicker));
+  // Handle keypress in textarea
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+      return; // Don't call onKeyDown - already sent
+    }
+    onKeyDown?.(e);
   };
 
-  const quickReplies = [
-    "Efficient Hotel pricing",
-    "Hotels in India",
-    "Best Hotel on the current Page",
-  ];
+  // Quick action: Edit Previous Prompt
+  const handleEditPrompt = () => {
+    if (lastUserMessage) {
+      dispatch(setInput(lastUserMessage));
+      dispatch(setShowInput(true));
+    }
+  };
+
+  // Quick action: Copy Last Response
+  const handleCopyResponse = () => {
+    if (lastBotResponse) {
+      navigator.clipboard.writeText(lastBotResponse).then(() => {
+        // Could show a toast here
+        console.log("[Chatbot Widget] Response copied to clipboard");
+      });
+    }
+  };
 
   return (
     <div
       className={`${styles.wrapper} ${theme === "light" ? styles.light : ""}`}
-      ref={wrapperRef}
     >
-      {/* Quick Reply Chips */}
-      <div className={styles.chips}>
-        {quickReplies.map((reply) => (
-          <button
-            key={reply}
-            className={styles.chip}
-            type="button"
-            onClick={() => onSend(reply)}
-          >
-            {reply}
-          </button>
-        ))}
-      </div>
-
-      {/* Bottom row: [capsule: input + mic + emoji] [Send button] */}
-      <div className={styles.bottomRow}>
-        {/* Input capsule */}
-        <div className={styles.inputCapsule}>
-          <input
-            ref={inputRef}
-            className={styles.input}
-            value={input}
-            onChange={(e) => dispatch(setInput(e.target.value))}
-            onKeyDown={onKeyDown}
-            placeholder={isListening ? "Listening..." : "Type a message..."}
-            readOnly={isListening}
-          />
-          
-          {/* Mic button */}
-          <button
-            className={`${styles.micBtn} ${isListening ? styles.listening : ""}`}
-            onClick={isListening ? stopListening : startListening}
-            type="button"
-            aria-label={isListening ? "Stop listening" : "Start voice input"}
-            title={isListening ? "Stop listening" : "Start voice input"}
-          >
-            <i className={`fa-solid ${isListening ? "fa-stop" : "fa-microphone"}`}></i>
-          </button>
-          
-          {/* Emoji button */}
-          <button
-            className={styles.emojiBtn}
-            onClick={toggleEmojiPicker}
-            type="button"
-            aria-label="Toggle emoji picker"
-          >
-            <i className="fa-brands fa-fort-awesome"></i>
-          </button>
-        </div>
-
-        {/* Send button — outside the capsule, never clipped */}
-        <button
-          className={styles.sendBtn}
-          onClick={() => onSend()}
-          type="button"
-          disabled={!input.trim()}
-        >
-          <i className="fa-solid fa-paper-plane"></i>
-        </button>
-      </div>
-
-      {/* Emoji Picker */}
-      {showEmojiPicker && (
-        <div
-          className={styles.emojiPickerContainer}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              dispatch(setShowEmojiPicker(false));
-            }
-          }}
-        >
-          <Suspense
-            fallback={
-              <div className={styles.emojiPickerFallback}>Loading emojis…</div>
-            }
-          >
-            <EmojiPicker
-              onEmojiClick={handleEmojiClick}
-              emojiStyle="native"
-              width="100%"
-              height={300}
-              autoFocusSearch={false}
-              searchPlaceholder="Search emojis…"
-              skinTonesDisabled
-              theme={theme === "light" ? "light" : "dark"}
+      {showInput ? (
+        // Input area (textarea)
+        <div className={styles.inputArea}>
+          <div className={styles.textareaWrapper}>
+            <textarea
+              ref={inputRef}
+              className={styles.textarea}
+              value={input}
+              onChange={(e) => dispatch(setInput(e.target.value))}
+              onKeyDown={handleKeyDown}
+              placeholder={isListening ? "Listening..." : "Type a message..."}
+              rows={2}
             />
-          </Suspense>
+            <div className={styles.inputActions}>
+              {/* Mic button */}
+              <button
+                className={`${styles.micBtn} ${isListening ? styles.listening : ""}`}
+                onClick={isListening ? stopListening : startListening}
+                type="button"
+                aria-label={
+                  isListening ? "Stop listening" : "Start voice input"
+                }
+                title={isListening ? "Stop listening" : "Start voice input"}
+              >
+                <i
+                  className={`fa-solid ${isListening ? "fa-stop" : "fa-microphone"}`}
+                ></i>
+              </button>
+              {/* Send button */}
+              <button
+                className={styles.sendBtn}
+                onClick={handleSend}
+                type="button"
+                disabled={!input.trim()}
+              >
+                <i className="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Quick actions area (shown after sending)
+        <div className={styles.quickActions}>
+          <button
+            className={styles.quickActionBtn}
+            onClick={handleEditPrompt}
+            type="button"
+            disabled={!lastUserMessage}
+          >
+            <i className="fa-solid fa-pen-to-square"></i>
+            <span>Edit</span>
+          </button>
+          <button
+            className={styles.quickActionBtn}
+            onClick={onRegenerate}
+            type="button"
+            disabled={!lastUserMessage}
+          >
+            <i className="fa-solid fa-rotate"></i>
+            <span>Regenerate</span>
+          </button>
+          <button
+            className={styles.quickActionBtn}
+            onClick={handleCopyResponse}
+            type="button"
+            disabled={!lastBotResponse}
+          >
+            <i className="fa-solid fa-copy"></i>
+            <span>Copy</span>
+          </button>
+          <button
+            className={styles.backToInputBtn}
+            onClick={() => dispatch(setShowInput(true))}
+            type="button"
+          >
+            <i className="fa-solid fa-plus"></i>
+            <span>New Message</span>
+          </button>
         </div>
       )}
     </div>

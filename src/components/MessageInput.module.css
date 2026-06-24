@@ -17,69 +17,18 @@
   border-top-color: #d6f5e3;
 }
 
-/* ── Quick reply chips ── */
-.chips {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none;
-  color: black;
-}
-.chips::-webkit-scrollbar {
-  display: none;
-}
-
-.chip {
-  flex: 0 0 auto;
-  padding: 5px 12px;
-  border: 1px solid rgba(29, 185, 84, 0.3);
-  border-radius: 999px;
-  background: rgba(29, 185, 84, 0.1);
-  color: #1db954;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: inherit;
-  white-space: nowrap;
-  transition:
-    background-color 0.18s,
-    transform 0.18s;
-}
-.chip:hover {
-  background: rgba(29, 185, 84, 0.2);
-  transform: translateY(-1px);
-}
-
-/* In light theme, chips use green accent colors */
-.light .chip {
-  background: #e8f5e9;
-  color: #0f9d58;
-  border-color: #c8e6c9;
-}
-
-.light .chip:hover {
-  background: #c8e6c9;
-}
-
-/* ── Bottom row: capsule + send button side by side ── */
-.bottomRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* ── Input area (textarea) ── */
+.inputArea {
   width: 100%;
-  box-sizing: border-box;
 }
 
-/* Input capsule — rounded pill containing text field + emoji */
-.inputCapsule {
-  flex: 1;
-  min-width: 0;
+.textareaWrapper {
   display: flex;
-  align-items: center;
-  padding: 4px 8px 4px 14px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px;
   border: 1.5px solid rgba(29, 185, 84, 0.2);
-  border-radius: 999px;
+  border-radius: 16px;
   background: #2a2a2a;
   box-sizing: border-box;
   transition:
@@ -87,50 +36,61 @@
     box-shadow 0.2s,
     background-color 0.2s;
 }
-.inputCapsule:focus-within {
+
+.textareaWrapper:focus-within {
   border-color: #1db954;
-  background: #2a2a2a;
   box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.15);
 }
 
-/* In light theme, input capsule has white background and green tint border */
-.light .inputCapsule {
+/* In light theme, textarea wrapper has white background */
+.light .textareaWrapper {
   background: #ffffff;
   border-color: #d6f5e3;
 }
 
-.light .inputCapsule:focus-within {
+.light .textareaWrapper:focus-within {
   border-color: #0f9d58;
-  background: #ffffff;
   box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.15);
 }
 
-.input {
-  flex: 1;
-  min-width: 0;
-  padding: 8px 0;
+.textarea {
+  width: 100%;
+  min-height: 40px;
+  max-height: 120px;
+  padding: 4px 0;
   border: none;
   outline: none;
   background: transparent;
   font-size: 14px;
   color: #e5e5e5;
   font-family: inherit;
+  resize: none;
+  line-height: 1.5;
 }
-.input::placeholder {
+
+.textarea::placeholder {
   color: #888888;
 }
 
-/* In light theme, input text is black */
-.light .input {
+/* In light theme, textarea text is black */
+.light .textarea {
   color: #111111;
 }
-.light .input::placeholder {
+
+.light .textarea::placeholder {
   color: #9ca3af;
+}
+
+/* Input action buttons (mic + send) */
+.inputActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 /* Mic button */
 .micBtn {
-  flex: 0 0 auto;
   width: 32px;
   height: 32px;
   padding: 0;
@@ -181,57 +141,34 @@
   background-color: rgba(255, 68, 68, 0.1);
 }
 
-/* Emoji button */
-.emojiBtn {
-  flex: 0 0 auto;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
-  cursor: pointer;
-  font-size: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background-color 0.18s,
-    transform 0.18s;
-  color: #1db954;
-}
-.emojiBtn:hover {
-  background-color: rgba(29, 185, 84, 0.15);
-  transform: scale(1.1);
-}
-
-/* In light theme, emoji button uses deep green accent */
-.light .emojiBtn {
-  color: #0f9d58;
-}
-.light .emojiBtn:hover {
-  background-color: rgba(15, 157, 88, 0.1);
-}
-
-/* Send button — standalone, never clipped */
+/* Send button */
 .sendBtn {
-  flex: 0 0 auto;
-  height: 42px;
-  padding: 0 20px;
+  height: 32px;
+  padding: 0 16px;
   border: none;
   border-radius: 999px;
   background: #1db954;
   color: #0a0a0a;
   cursor: pointer;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   font-family: inherit;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   transition: transform 0.18s linear;
 }
+
 .sendBtn:hover {
   background: #17a04a;
-  transform: scale(1.1);
+  transform: scale(1.05);
+}
+
+.sendBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* In light theme, send button is deep green with white text */
@@ -244,27 +181,114 @@
   background: #0b8a4b;
 }
 
-/* ── Emoji picker dropdown ── */
-.emojiPickerContainer {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: calc(100% + 6px);
-  z-index: 10000;
-  overflow: hidden;
+/* ── Quick actions area ── */
+.quickActions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.quickActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
   border: 1px solid rgba(29, 185, 84, 0.2);
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-  background: #1a1a1a;
-}
-
-.emojiPickerFallback {
-  padding: 20px 16px;
+  border-radius: 999px;
+  background: rgba(29, 185, 84, 0.08);
+  color: #1db954;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
   text-align: center;
-  color: #9ca3af;
-  font-size: 13px;
+  transition:
+    background-color 0.18s,
+    transform 0.18s,
+    border-color 0.18s;
+  flex: 1;
+  min-width: 0;
 }
 
-.emojiPickerContainer :global(.EmojiPickerReact) {
-  --emojis-per-row: 9;
+.quickActionBtn:hover {
+  background: rgba(29, 185, 84, 0.15);
+  border-color: rgba(29, 185, 84, 0.4);
+  transform: translateY(-2px);
+}
+
+.quickActionBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.quickActionBtn i {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.quickActionBtn span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Light theme quick actions */
+.light .quickActionBtn {
+  background: rgba(15, 157, 88, 0.08);
+  color: #0f9d58;
+  border-color: rgba(15, 157, 88, 0.2);
+}
+
+.light .quickActionBtn:hover {
+  background: rgba(15, 157, 88, 0.12);
+  border-color: rgba(15, 157, 88, 0.4);
+}
+
+/* New Message button */
+.backToInputBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px dashed rgba(29, 185, 84, 0.3);
+  border-radius: 999px;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  transition:
+    background-color 0.18s,
+    border-color 0.18s,
+    color 0.18s;
+  width: auto;
+}
+
+.backToInputBtn:hover {
+  background: rgba(29, 185, 84, 0.08);
+  border-color: rgba(29, 185, 84, 0.5);
+  color: #1db954;
+}
+
+.backToInputBtn i {
+  font-size: 12px;
+}
+
+/* Light theme New Message button */
+.light .backToInputBtn {
+  border-color: rgba(15, 157, 88, 0.3);
+  color: #9ca3af;
+}
+
+.light .backToInputBtn:hover {
+  background: rgba(15, 157, 88, 0.08);
+  border-color: rgba(15, 157, 88, 0.5);
+  color: #0f9d58;
 }

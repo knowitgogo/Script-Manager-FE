@@ -9,7 +9,7 @@ import { selectIsLoading } from "../store/chatSlice";
 const STORAGE_KEY = "chatWindowSize";
 const DEFAULT_SIZE = { width: 360, height: 540 };
 
-export function ChatWindow({ messages, onKeyDown, onSend, onClear }) {
+export function ChatWindow({ messages, onKeyDown, onSend, onClear, onRegenerate }) {
   const isLoading = useSelector(selectIsLoading);
   const [size, setSize] = useState(DEFAULT_SIZE);
 
@@ -87,7 +87,7 @@ export function ChatWindow({ messages, onKeyDown, onSend, onClear }) {
       <div className={styles.inner}>
         <ChatHeader onClear={onClear} onResetSize={resetSize} />
         <MessagesList messages={messages} loading={isLoading} />
-        <MessageInput onKeyDown={onKeyDown} onSend={onSend} />
+        <MessageInput onKeyDown={onKeyDown} onSend={onSend} onRegenerate={onRegenerate} />
       </div>
     </div>
   );

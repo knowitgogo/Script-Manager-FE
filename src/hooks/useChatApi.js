@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
@@ -6,9 +6,11 @@ import {
   selectApiUrl,
   selectApiKey,
   selectPageContext,
+  selectLastUserMessage,
   addMessage,
   setInput,
   setIsLoading,
+  setShowInput,
 } from "../store/chatSlice";
 
 export function useChatApi() {
@@ -17,20 +19,33 @@ export function useChatApi() {
   const apiUrl = useSelector(selectApiUrl);
   const apiKey = useSelector(selectApiKey);
   const pageContext = useSelector(selectPageContext);
+  const lastUserMessage = useSelector(selectLastUserMessage);
+  
+  // Track if a request is currently in flight to prevent double sends
+  const isSending = useRef(false);
 
   const sendMessage = useCallback(
     async (customText) => {
+      // Prevent duplicate sends
+      if (isSending.current) {
+        console.log("[Chatbot Widget] Ignoring duplicate send request");
+        return;
+      }
+      
       const messageText = (
         typeof customText === "string" ? customText : input
       ).trim();
       if (!messageText) return;
 
+      isSending.current = true;
+
+      // Hide input after sending
+      dispatch(setShowInput(false));
+
       dispatch(addMessage({ role: "user", text: messageText }));
 
-      // Only clear input box if not a quick-reply
-      if (typeof customText !== "string") {
-        dispatch(setInput(""));
-      }
+      // Clear input box
+      dispatch(setInput(""));
 
       const cleanUrl = apiUrl.endsWith("/") ? apiUrl.slice(0, -1) : apiUrl;
       const finalUrl = apiKey ? `${cleanUrl}/${apiKey}` : cleanUrl;
@@ -75,10 +90,20 @@ export function useChatApi() {
         );
       } finally {
         dispatch(setIsLoading(false));
+        isSending.current = false;
       }
     },
     [dispatch, input, apiUrl, apiKey, pageContext]
   );
 
-  return { sendMessage };
+  // Function to regenerate the last response
+  const regenerateResponse = useCallback(() => {
+    if (lastUserMessage) {
+      // Remove the last bot message and regenerate
+      dispatch(setInput(lastUserMessage));
+      dispatch(setShowInput(true)); // Show input so user can edit if needed
+    }
+  }, [dispatch, lastUserMessage]);
+
+  return { sendMessage, regenerateResponse };
 }
