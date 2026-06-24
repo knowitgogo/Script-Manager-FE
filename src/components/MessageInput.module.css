@@ -128,6 +128,60 @@
   color: #9ca3af;
 }
 
+/* Mic button */
+.micBtn {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.18s,
+    transform 0.18s,
+    color 0.18s;
+  color: #888;
+}
+
+.micBtn:hover {
+  background-color: rgba(29, 185, 84, 0.15);
+  transform: scale(1.1);
+  color: #1db954;
+}
+
+.micBtn.listening {
+  color: #ff4444;
+  background-color: rgba(255, 68, 68, 0.1);
+  animation: micPulse 1.5s infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* In light theme, mic button uses deep green accent */
+.light .micBtn:hover {
+  background-color: rgba(15, 157, 88, 0.1);
+  color: #0f9d58;
+}
+
+.light .micBtn.listening {
+  color: #ff4444;
+  background-color: rgba(255, 68, 68, 0.1);
+}
+
+/* Emoji button */
 .emojiBtn {
   flex: 0 0 auto;
   width: 32px;
@@ -212,7 +266,5 @@
 }
 
 .emojiPickerContainer :global(.EmojiPickerReact) {
-  --epr-emoji-size: 22px;
-  --epr-category-label-height: 26px;
-  font-family: inherit;
+  --emojis-per-row: 9;
 }

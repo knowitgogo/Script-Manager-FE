@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useEffect } from "react";
+import { lazy, Suspense, useRef, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./MessageInput.module.css";
 import {
@@ -18,17 +18,69 @@ export function MessageInput({ onKeyDown, onSend }) {
   const wrapperRef = useRef(null);
   const inputRef = useRef(null);
 
+  // Speech recognition state
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef(null);
+
   // Consume theme context to apply light mode styles
   const { theme } = useTheme();
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        dispatch(setShowEmojiPicker(false));
+  // Cleanup recognition on unmount
+  useState(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const startListening = useCallback(() => {
+    // Check if browser supports SpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      console.warn("[Chatbot Widget] Speech recognition not supported in this browser");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      dispatch(setInput("")); // Clear any existing text
+      console.log("[Chatbot Widget] Speech recognition started");
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      dispatch(setInput(transcript));
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      console.log("[Chatbot Widget] Speech recognition ended");
+      // Note: We do NOT auto-send. User must click Send button.
+    };
+
+    recognition.onerror = (event) => {
+      console.error("[Chatbot Widget] Speech recognition error:", event.error);
+      setIsListening(false);
+    };
+
+    recognition.start();
+  }, [dispatch]);
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    setIsListening(false);
   }, []);
 
   const handleEmojiClick = (emojiData) => {
@@ -41,7 +93,11 @@ export function MessageInput({ onKeyDown, onSend }) {
     dispatch(setShowEmojiPicker(!showEmojiPicker));
   };
 
-  const quickReplies = ["What is Web3?", "Pricing", "FAQs"];
+  const quickReplies = [
+    "Efficient Hotel pricing",
+    "Hotels in India",
+    "Best Hotel on the current Page",
+  ];
 
   return (
     <div
@@ -62,7 +118,7 @@ export function MessageInput({ onKeyDown, onSend }) {
         ))}
       </div>
 
-      {/* Bottom row: [capsule: input + emoji] [Send button] */}
+      {/* Bottom row: [capsule: input + mic + emoji] [Send button] */}
       <div className={styles.bottomRow}>
         {/* Input capsule */}
         <div className={styles.inputCapsule}>
@@ -72,8 +128,22 @@ export function MessageInput({ onKeyDown, onSend }) {
             value={input}
             onChange={(e) => dispatch(setInput(e.target.value))}
             onKeyDown={onKeyDown}
-            placeholder="Type a message..."
+            placeholder={isListening ? "Listening..." : "Type a message..."}
+            readOnly={isListening}
           />
+          
+          {/* Mic button */}
+          <button
+            className={`${styles.micBtn} ${isListening ? styles.listening : ""}`}
+            onClick={isListening ? stopListening : startListening}
+            type="button"
+            aria-label={isListening ? "Stop listening" : "Start voice input"}
+            title={isListening ? "Stop listening" : "Start voice input"}
+          >
+            <i className={`fa-solid ${isListening ? "fa-stop" : "fa-microphone"}`}></i>
+          </button>
+          
+          {/* Emoji button */}
           <button
             className={styles.emojiBtn}
             onClick={toggleEmojiPicker}
@@ -113,7 +183,7 @@ export function MessageInput({ onKeyDown, onSend }) {
           >
             <EmojiPicker
               onEmojiClick={handleEmojiClick}
-              emojiStyle="google"
+              emojiStyle="native"
               width="100%"
               height={300}
               autoFocusSearch={false}

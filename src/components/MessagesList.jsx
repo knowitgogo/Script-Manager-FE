@@ -66,16 +66,28 @@ export function MessagesList({ messages, loading }) {
                 <span className={styles.avatar}>
                   <i className="fa-brands fa-twitch"></i>
                 </span>
-                <div className={styles.bubble}>{msg.text}</div>
+                <div
+                  className={styles.bubble}
+                  dangerouslySetInnerHTML={{ __html: msg.text }}
+                />
               </>
             )}
           </div>
         );
       })}
       {loading && (
-        <p className={styles.loading}>
-          <em>Bot is typing...</em>
-        </p>
+        <div className={`${styles.message} ${styles.bot}`}>
+          <span className={styles.avatar}>
+            <i className="fa-brands fa-twitch"></i>
+          </span>
+          <div className={`${styles.bubble} ${styles.typingBubble}`}>
+            <div className={styles.typingIndicator}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
       )}
       {!isAtBottom && (
         <button
