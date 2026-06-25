@@ -10,8 +10,6 @@ import {
   setShowInput,
   removeLastMessages,
 } from "../store/chatSlice";
-import { useTheme } from "../context/ThemeContext";
-
 export function MessageInput({ onKeyDown, onSend, onRegenerate }) {
   const dispatch = useDispatch();
   const input = useSelector(selectInput);
@@ -23,8 +21,6 @@ export function MessageInput({ onKeyDown, onSend, onRegenerate }) {
   // Speech recognition state
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
-
-  const { theme } = useTheme();
 
   // Focus textarea when input is shown
   useEffect(() => {
@@ -119,7 +115,7 @@ export function MessageInput({ onKeyDown, onSend, onRegenerate }) {
 
   return (
     <div
-      className={`${styles.wrapper} ${theme === "light" ? styles.light : ""}`}
+      className={styles.wrapper}
     >
       {showInput ? (
         // Input area (textarea)
@@ -131,35 +127,19 @@ export function MessageInput({ onKeyDown, onSend, onRegenerate }) {
               value={input}
               onChange={(e) => dispatch(setInput(e.target.value))}
               onKeyDown={handleKeyDown}
-              placeholder={isListening ? "Listening..." : "Type a message..."}
+              placeholder={isListening ? "Listening..." : "Type here..."}
               rows={2}
             />
-            <div className={styles.inputActions}>
-              {/* Mic button */}
-              <button
-                className={`${styles.micBtn} ${isListening ? styles.listening : ""}`}
-                onClick={isListening ? stopListening : startListening}
-                type="button"
-                aria-label={
-                  isListening ? "Stop listening" : "Start voice input"
-                }
-                title={isListening ? "Stop listening" : "Start voice input"}
-              >
-                <i
-                  className={`fa-solid ${isListening ? "fa-stop" : "fa-microphone"}`}
-                ></i>
-              </button>
-              {/* Send button */}
-              <button
-                className={styles.sendBtn}
-                onClick={handleSend}
-                type="button"
-                disabled={!input.trim()}
-              >
-                <i className="fa-solid fa-paper-plane"></i>
-              </button>
-            </div>
           </div>
+          {/* Send button (outside textareaWrapper) */}
+          <button
+            className={styles.sendBtn}
+            onClick={handleSend}
+            type="button"
+            disabled={!input.trim()}
+          >
+            <i className="fa-solid fa-paper-plane"></i>
+          </button>
         </div>
       ) : (
         // Quick actions area (shown after sending)

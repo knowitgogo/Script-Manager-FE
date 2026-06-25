@@ -1,15 +1,16 @@
 import styles from "./ChatButton.module.css";
-import { useTheme } from "../context/ThemeContext";
 
 export function ChatButton({ isOpen, onClick }) {
-  const { theme } = useTheme();
-
   return (
     <button
-      className={`${styles.button} ${theme === "light" ? styles.light : ""}`}
+      className={styles.button}
       onClick={onClick}
     >
-      <i className="fa-solid fa-headset"></i>
+      {isOpen ? (
+        <i className="fa-solid fa-xmark"></i>
+      ) : (
+        <i className="fa-solid fa-headset"></i>
+      )}
     </button>
   );
 }

@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { setConfig } from "./store/chatSlice";
+import "./chat-theme.css";
 
 function injectFont() {
   if (document.getElementById("montserrat-font")) return;
@@ -33,6 +34,7 @@ export function mountChatbot() {
   const container = document.createElement("div");
   container.id = "chatbot-root";
   container.setAttribute("data-chatbot-mounted", "true");
+  container.setAttribute("data-theme", "light");
   document.body.appendChild(container);
 
   ReactDOM.createRoot(container).render(

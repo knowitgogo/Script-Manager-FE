@@ -20,6 +20,15 @@
   --heading: "Montserrat", sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
+  /* Chat Theme Variables */
+  --chat-bg: #12121e;
+  --chat-surface: #1e1e30;
+  --chat-border: #3a3a50;
+  --chat-bubble-sent: #d85a30;
+  --chat-bubble-recv: #2a2a3e;
+  --chat-text-primary: #e8e6f0;
+  --chat-text-muted: #9090a8;
+
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
@@ -57,6 +66,7 @@
 
 body {
   margin: 0;
+  background: var(--chat-bg);
 }
 
 #root {

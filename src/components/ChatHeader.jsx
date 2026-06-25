@@ -2,11 +2,10 @@ import styles from "./ChatHeader.module.css";
 import { useTheme } from "../context/ThemeContext";
 
 export function ChatHeader({ onClear, onResetSize }) {
-  // Consume theme context for the dark/light toggle button
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className={`${styles.header} ${theme === "light" ? styles.light : ""}`}>
+    <div className={styles.header}>
       <p className={styles.title}>Support</p>
       <div className={styles.actions}>
         {/* Reset window size to default button */}

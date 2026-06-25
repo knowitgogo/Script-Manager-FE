@@ -4,8 +4,9 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  background: black;
-  color: #1db954;
+  background: var(--chat-surface);
+  border-bottom: 1px solid var(--chat-border);
+  color: var(--chat-text-primary);
   font-family: "Montserrat", sans-serif;
 }
 
@@ -22,15 +23,7 @@
   font-size: 18px;
   font-weight: 700;
   line-height: 1.1;
-  color: white;
-}
-
-/* Light theme variant — black background with white text */
-.light {
-  background: black;
-}
-.light .title {
-  color: #ffffff;
+  color: var(--chat-text-primary);
 }
 
 /* Reset window size to default button */
@@ -39,10 +32,10 @@
   height: 30px;
   flex: 0 0 auto;
   padding: 0;
-  border: 1px solid rgba(29, 185, 84, 0.3);
+  border: 1px solid var(--chat-border);
   border-radius: 50%;
-  background: rgba(29, 185, 84, 0.1);
-  color: #1db954;
+  background: transparent;
+  color: var(--chat-text-muted);
   cursor: pointer;
   font-size: 12px;
   display: flex;
@@ -56,19 +49,8 @@
 
 .resetSizeBtn:hover {
   transform: scale(1.1);
-  background: rgba(29, 185, 84, 0.2);
-  border-color: rgba(29, 185, 84, 0.5);
-}
-
-/* In light theme, buttons use white-on-dark style */
-.light .resetSizeBtn {
-  border-color: rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.16);
-  color: white;
-}
-.light .resetSizeBtn:hover {
-  background: rgba(255, 255, 255, 0.26);
-  border-color: rgba(255, 255, 255, 0.38);
+  background: var(--chat-bubble-recv);
+  border-color: var(--chat-border);
 }
 
 .clearBtn {
@@ -76,10 +58,10 @@
   height: 30px;
   flex: 0 0 auto;
   padding: 0;
-  border: 1px solid rgba(29, 185, 84, 0.3);
+  border: 1px solid var(--chat-border);
   border-radius: 25px;
-  background: rgba(29, 185, 84, 0.1);
-  color: #1db954;
+  background: transparent;
+  color: var(--chat-text-muted);
   cursor: pointer;
   font-size: 14px;
   transition:
@@ -90,18 +72,8 @@
 
 .clearBtn:hover {
   transform: scale(1.1);
-  background: rgba(29, 185, 84, 0.2);
-  border-color: rgba(29, 185, 84, 0.5);
-}
-
-.light .clearBtn {
-  border-color: rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.16);
-  color: white;
-}
-.light .clearBtn:hover {
-  background: rgba(255, 255, 255, 0.26);
-  border-color: rgba(255, 255, 255, 0.38);
+  background: var(--chat-bubble-recv);
+  border-color: var(--chat-border);
 }
 
 /* Theme toggle button — switches between dark and light mode */
@@ -110,10 +82,10 @@
   height: 30px;
   flex: 0 0 auto;
   padding: 0;
-  border: 1px solid rgba(29, 185, 84, 0.3);
+  border: 1px solid var(--chat-border);
   border-radius: 50%;
-  background: rgba(29, 185, 84, 0.1);
-  color: #1db954;
+  background: transparent;
+  color: var(--chat-text-muted);
   cursor: pointer;
   font-size: 14px;
   display: flex;
@@ -127,16 +99,8 @@
 
 .themeToggle:hover {
   transform: scale(1.1);
-  background: rgba(29, 185, 84, 0.2);
-  border-color: rgba(29, 185, 84, 0.5);
+  background: var(--chat-bubble-recv);
+  border-color: var(--chat-border);
 }
 
-.light .themeToggle {
-  border-color: rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.16);
-  color: white;
-}
-.light .themeToggle:hover {
-  background: rgba(255, 255, 255, 0.26);
-  border-color: rgba(255, 255, 255, 0.38);
-}
+

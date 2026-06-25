@@ -80,6 +80,31 @@ export function useChatApi() {
             ? response.data
             : response.data?.reply || "No reply received.";
 
+        // Clear previous highlights
+        document.querySelectorAll('.hotel-card.highlighted-hotel').forEach(card => {
+          card.classList.remove('highlighted-hotel');
+          card.style.boxShadow = '';
+          card.style.border = '';
+        });
+
+        // Highlight hotel listings on the page based on the response
+        if (pageContext && pageContext.hotels) {
+          pageContext.hotels.forEach(hotel => {
+            if (replyText.toLowerCase().includes(hotel.name.toLowerCase())) {
+              const cards = document.querySelectorAll('.hotel-card');
+              cards.forEach(card => {
+                const nameEl = card.querySelector('.hotel-name');
+                if (nameEl && nameEl.innerText.trim().toLowerCase() === hotel.name.toLowerCase()) {
+                  card.classList.add('highlighted-hotel');
+                  card.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.8)';
+                  card.style.border = '2px solid #ffd700';
+                  card.style.transition = 'all 0.3s ease';
+                }
+              });
+            }
+          });
+        }
+
         dispatch(addMessage({ role: "bot", text: replyText }));
       } catch (error) {
         console.error("Chat API Error:", error);

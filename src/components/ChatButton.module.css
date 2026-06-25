@@ -3,13 +3,13 @@
   padding: 14px 20px;
   border: none;
   border-radius: 999px;
-  background: #1db954;
-  color: #0a0a0a;
+  background: var(--chat-bubble-sent);
+  color: #ffffff;
   cursor: pointer;
   font-size: 16px;
   font-weight: 700;
   font-family: "Montserrat", sans-serif;
-  box-shadow: 0 14px 28px rgba(29, 185, 84, 0.32);
+  box-shadow: none; /* Removed shadow when not active */
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -17,16 +17,9 @@
 
 .button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 34px rgba(29, 185, 84, 0.4);
-}
-
-/* Light theme variant — deep green background */
-.light {
-  background: #0f9d58;
+  background: #ff6038;
   color: #ffffff;
-  box-shadow: 0 14px 28px rgba(15, 157, 88, 0.32);
+  box-shadow: 0 8px 24px rgba(255, 122, 89, 0.4);
 }
 
-.light:hover {
-  box-shadow: 0 18px 34px rgba(15, 157, 88, 0.4);
-}
+

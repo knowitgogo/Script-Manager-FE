@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./MessagesList.module.css";
-import { useTheme } from "../context/ThemeContext";
 
 export function MessagesList({ messages, loading }) {
   const bottomRef = useRef(null);
   const containerRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
-
-  // Consume theme context for applying light/dark styles
-  const { theme } = useTheme();
 
   const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({
@@ -43,7 +39,7 @@ export function MessagesList({ messages, loading }) {
 
   return (
     <div
-      className={`${styles.container} ${theme === "light" ? styles.light : ""}`}
+      className={styles.container}
       ref={containerRef}
     >
       {messages.map((msg, i) => {

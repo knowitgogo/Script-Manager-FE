@@ -1,14 +1,17 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
-// Create a context for theme management
 const ThemeContext = createContext();
 
-// Theme provider component that wraps the app and provides theme state
 export function ThemeProvider({ children }) {
-  // Current theme state to track the current/default "dark" or "light" (white)
   const [theme, setTheme] = useState("dark");
 
-  // Toggle between dark and light themes
+  useEffect(() => {
+    const root = document.getElementById("chatbot-root");
+    if (root) {
+      root.setAttribute("data-theme", theme);
+    }
+  }, [theme]);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };

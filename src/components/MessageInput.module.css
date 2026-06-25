@@ -5,180 +5,108 @@
   gap: 8px;
   width: 100%;
   padding: 10px 12px 12px;
-  background: #1a1a1a;
-  border-top: 1px solid rgba(29, 185, 84, 0.16);
+  background: transparent;
+  border-top: 1px solid var(--chat-border);
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
 }
 
-/* Light theme variant — white background for input module */
-.light {
-  background: #ffffff;
-  border-top-color: #d6f5e3;
-}
-
 /* ── Input area (textarea) ── */
 .inputArea {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
   width: 100%;
 }
 
 .textareaWrapper {
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  border: 1.5px solid rgba(29, 185, 84, 0.2);
-  border-radius: 16px;
-  background: #2a2a2a;
+  border-radius: 6px;
+  background: var(--chat-surface);
+  border: 1px solid var(--chat-border);
   box-sizing: border-box;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s,
-    background-color 0.2s;
+  transition: box-shadow 0.2s, background-color 0.2s;
 }
 
 .textareaWrapper:focus-within {
-  border-color: #1db954;
-  box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.15);
-}
-
-/* In light theme, textarea wrapper has white background */
-.light .textareaWrapper {
-  background: #ffffff;
-  border-color: #d6f5e3;
-}
-
-.light .textareaWrapper:focus-within {
-  border-color: #0f9d58;
-  box-shadow: 0 0 0 3px rgba(15, 157, 88, 0.15);
+  box-shadow: 0 0 0 1px #ff7a59; /* subtle coral ring */
 }
 
 .textarea {
-  width: 100%;
-  min-height: 40px;
+  flex: 1;
+  min-height: 24px;
   max-height: 120px;
   padding: 4px 0;
   border: none;
   outline: none;
   background: transparent;
   font-size: 14px;
-  color: #e5e5e5;
+  color: var(--chat-text-muted);
   font-family: inherit;
   resize: none;
   line-height: 1.5;
 }
 
 .textarea::placeholder {
-  color: #888888;
+  color: var(--chat-text-muted);
+  opacity: 0.7;
 }
 
-/* In light theme, textarea text is black */
-.light .textarea {
-  color: #111111;
-}
-
-.light .textarea::placeholder {
-  color: #9ca3af;
-}
-
-/* Input action buttons (mic + send) */
-.inputActions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-/* Mic button */
-.micBtn {
+/* Clip button */
+.clipBtn {
   width: 32px;
   height: 32px;
   padding: 0;
   border: none;
-  border-radius: 50%;
   background: transparent;
   cursor: pointer;
-  font-size: 17px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition:
-    background-color 0.18s,
-    transform 0.18s,
-    color 0.18s;
+  transition: color 0.18s;
   color: #888;
 }
 
-.micBtn:hover {
-  background-color: rgba(29, 185, 84, 0.15);
-  transform: scale(1.1);
-  color: #1db954;
-}
-
-.micBtn.listening {
-  color: #ff4444;
-  background-color: rgba(255, 68, 68, 0.1);
-  animation: micPulse 1.5s infinite;
-}
-
-@keyframes micPulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.15);
-  }
-}
-
-/* In light theme, mic button uses deep green accent */
-.light .micBtn:hover {
-  background-color: rgba(15, 157, 88, 0.1);
-  color: #0f9d58;
-}
-
-.light .micBtn.listening {
-  color: #ff4444;
-  background-color: rgba(255, 68, 68, 0.1);
+.clipBtn:hover {
+  color: #ccc;
 }
 
 /* Send button */
 .sendBtn {
-  height: 32px;
-  padding: 0 16px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: none;
-  border-radius: 999px;
-  background: #1db954;
-  color: #0a0a0a;
+  border-radius: 6px;
+  background: #ff7a59; /* Coral/orange color from image */
+  color: #ffffff;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: inherit;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  transition: transform 0.18s linear;
+  transition: transform 0.18s linear, background-color 0.18s;
+  flex-shrink: 0;
 }
 
 .sendBtn:hover {
-  background: #17a04a;
+  background: #ff6038;
   transform: scale(1.05);
 }
 
 .sendBtn:disabled {
-  opacity: 0.5;
+  background: #2b2a29; /* Matches input field color */
+  color: #888; /* Matches placeholder/icon color */
   cursor: not-allowed;
   transform: none;
-}
-
-/* In light theme, send button is deep green with white text */
-.light .sendBtn {
-  background: #0f9d58;
-  color: #ffffff;
-}
-
-.light .sendBtn:hover {
-  background: #0b8a4b;
+  opacity: 1;
+  box-shadow: none;
 }
 
 /* ── Quick actions area ── */
@@ -197,10 +125,10 @@
   justify-content: center;
   gap: 6px;
   padding: 8px 12px;
-  border: 1px solid rgba(29, 185, 84, 0.2);
+  border: 1px solid var(--chat-border);
   border-radius: 999px;
-  background: rgba(29, 185, 84, 0.08);
-  color: #1db954;
+  background: transparent;
+  color: var(--chat-text-muted);
   cursor: pointer;
   font-size: 12px;
   font-weight: 500;
@@ -209,14 +137,16 @@
   transition:
     background-color 0.18s,
     transform 0.18s,
-    border-color 0.18s;
+    border-color 0.18s,
+    color 0.18s;
   flex: 1;
   min-width: 0;
 }
 
 .quickActionBtn:hover {
-  background: rgba(29, 185, 84, 0.15);
-  border-color: rgba(29, 185, 84, 0.4);
+  background: var(--chat-bubble-recv);
+  border-color: var(--chat-border);
+  color: #ff7a59;
   transform: translateY(-2px);
 }
 
@@ -237,18 +167,6 @@
   text-overflow: ellipsis;
 }
 
-/* Light theme quick actions */
-.light .quickActionBtn {
-  background: rgba(15, 157, 88, 0.08);
-  color: #0f9d58;
-  border-color: rgba(15, 157, 88, 0.2);
-}
-
-.light .quickActionBtn:hover {
-  background: rgba(15, 157, 88, 0.12);
-  border-color: rgba(15, 157, 88, 0.4);
-}
-
 /* New Message button */
 .backToInputBtn {
   display: flex;
@@ -256,10 +174,10 @@
   justify-content: center;
   gap: 6px;
   padding: 8px 14px;
-  border: 1.5px dashed rgba(29, 185, 84, 0.3);
+  border: 1.5px dashed var(--chat-border);
   border-radius: 999px;
   background: transparent;
-  color: #888;
+  color: var(--chat-text-muted);
   cursor: pointer;
   font-size: 12px;
   font-weight: 500;
@@ -272,23 +190,13 @@
 }
 
 .backToInputBtn:hover {
-  background: rgba(29, 185, 84, 0.08);
-  border-color: rgba(29, 185, 84, 0.5);
-  color: #1db954;
+  background: rgba(255, 122, 89, 0.08);
+  border-color: rgba(255, 122, 89, 0.5);
+  color: #ff7a59;
 }
 
 .backToInputBtn i {
   font-size: 12px;
 }
 
-/* Light theme New Message button */
-.light .backToInputBtn {
-  border-color: rgba(15, 157, 88, 0.3);
-  color: #9ca3af;
-}
 
-.light .backToInputBtn:hover {
-  background: rgba(15, 157, 88, 0.08);
-  border-color: rgba(15, 157, 88, 0.5);
-  color: #0f9d58;
-}

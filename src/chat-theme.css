@@ -1,0 +1,48 @@
+/* =====================================
+   Chat Widget Theme System
+   Uses data-theme attribute on #chatbot-root
+   ===================================== */
+
+/* ---- Dark Theme (default) ---- */
+#chatbot-root[data-theme="dark"] {
+  --chat-bg: #12121e;
+  --chat-surface: #1e1e30;
+  --chat-border: #3a3a50;
+  --chat-bubble-sent: #d85a30;
+  --chat-bubble-recv: #2a2a3e;
+  --chat-text-primary: #e8e6f0;
+  --chat-text-muted: #9090a8;
+
+  --chat-header-text: #e8e6f0;
+  --chat-scrollbar-track: #1e1e30;
+  --chat-scrollbar-thumb: #3a3a50;
+  --chat-btn-hover: #2a2a3e;
+  --chat-meta-color: #9090a8;
+}
+
+/* ---- Light Theme ---- */
+#chatbot-root[data-theme="light"] {
+  --chat-bg: #f5f4f0;
+  --chat-surface: #ffffff;
+  --chat-border: #e0deda;
+  --chat-bubble-sent: #d85a30;
+  --chat-bubble-recv: #ede9e3;
+  --chat-text-primary: #1a1a2e;
+  --chat-text-muted: #8a8880;
+
+  --chat-header-text: #1a1a2e;
+  --chat-scrollbar-track: #f0ede8;
+  --chat-scrollbar-thumb: #d4d0ca;
+  --chat-btn-hover: #e8e4de;
+  --chat-meta-color: #8a8880;
+}
+
+/* ---- GLOBAL widget root styles ---- */
+#chatbot-root {
+  font-family: "Montserrat", sans-serif;
+  color: var(--chat-text-primary);
+}
+
+/* Ensure all children inherit the theme */
+/* Note: font-family inherits naturally from #chatbot-root.
+   Do NOT set it globally (*) because that breaks Font Awesome icon fonts (<i>) */
