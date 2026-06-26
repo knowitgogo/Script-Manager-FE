@@ -1,7 +1,7 @@
-export function getChatbotConfig() {
+export function getSuggestConfig() {
   const script =
     document.currentScript ||
-    document.querySelector('script[src*="chatbot.iife.js"]');
+    document.querySelector('script[src*="chatbot.iife.js"], script[src*="suggestiq.iife.js"]');
 
   let apiKey = script?.dataset.apiKey || null;
   if (!apiKey && script?.src) {
@@ -13,9 +13,7 @@ export function getChatbotConfig() {
     }
   }
 
-  // Always use the Laravel backend API endpoint
-  // NOTE: data-api-url in HTML is for the widget loader script, NOT the chat API
-  const baseUrl = "http://127.0.0.1:8000/user/chatbot/message";
+  const baseUrl = script?.dataset.apiUrl || "http://127.0.0.1:8000/suggest/generate";
 
   return { apiUrl: baseUrl, apiKey };
 }

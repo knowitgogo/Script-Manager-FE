@@ -1,149 +1,99 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const loadMessages = () => {
+const loadApiKey = () => {
   try {
-    const saved = localStorage.getItem("chatbot_messages");
-    return saved ? JSON.parse(saved) : [];
+    return localStorage.getItem("siq_api_key") || "";
   } catch {
-    return [];
+    return "";
   }
 };
 
-const loadPageContext = () => {
-  try {
-    const saved = localStorage.getItem("chatbot_page_context");
-    return saved ? JSON.parse(saved) : null;
-  } catch {
-    return null;
-  }
-};
-
-const chatSlice = createSlice({
-  name: "chat",
+const suggestSlice = createSlice({
+  name: "suggest",
   initialState: {
-    messages: loadMessages(),
-    input: "",
     isOpen: false,
-    apiUrl: "http://127.0.0.1:8000/user/chatbot/message",
-    apiKey: null,
+    apiUrl: "http://127.0.0.1:8000/suggest/generate",
+    apiKey: loadApiKey(),
+    input: "",
     isLoading: false,
-    pageContext: loadPageContext(),
-    pageContextId: loadPageContext()?.id || null,
-    showInput: true, // Whether to show the input area
-    lastUserMessage: null, // Store last user message for edit/regenerate
-    lastBotResponse: null, // Store last bot response for copy
+    suggestions: [],
+    selectedIndex: -1,
+    status: {
+      dot: "idle",
+      text: "Awaiting your prompt above to produce curated cards",
+    },
+    modalItem: null,
   },
   reducers: {
-    addMessage(state, action) {
-      state.messages.push(action.payload);
-      
-      // Track last user and bot messages
-      if (action.payload.role === "user") {
-        state.lastUserMessage = action.payload.text;
-      } else if (action.payload.role === "bot") {
-        state.lastBotResponse = action.payload.text;
-      }
-    },
     setInput(state, action) {
       state.input = action.payload;
     },
+    setSuggestions(state, action) {
+      state.suggestions = action.payload;
+    },
+    selectSuggestion(state, action) {
+      state.selectedIndex = action.payload;
+    },
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
+    },
+    setStatus(state, action) {
+      state.status = action.payload;
+    },
+    setApiKey(state, action) {
+      state.apiKey = action.payload;
+      try {
+        localStorage.setItem("siq_api_key", action.payload);
+      } catch (e) {
+        console.warn("Failed to save API key:", e);
+      }
+    },
+    openModal(state, action) {
+      state.modalItem = action.payload;
+    },
+    closeModal(state) {
+      state.modalItem = null;
+    },
+    clearSuggestions(state) {
+      state.suggestions = [];
+      state.selectedIndex = -1;
+    },
     toggleChat(state) {
       state.isOpen = !state.isOpen;
+    },
+    closeChat(state) {
+      state.isOpen = false;
     },
     setConfig(state, action) {
       state.apiUrl = action.payload.apiUrl || state.apiUrl;
       state.apiKey = action.payload.apiKey || state.apiKey;
     },
-    clearHistory(state) {
-      state.messages = [];
-      state.lastUserMessage = null;
-      state.lastBotResponse = null;
-    },
-    removeLastMessages(state) {
-      // Remove the last user and bot message pair
-      const msgCount = state.messages.length;
-      if (msgCount >= 2) {
-        // Check if last two messages are a user-bot pair
-        const lastMsg = state.messages[msgCount - 1];
-        const secondLastMsg = state.messages[msgCount - 2];
-        
-        if (lastMsg.role === "bot" && secondLastMsg.role === "user") {
-          // Remove both messages
-          state.messages.splice(-2, 2);
-        } else if (lastMsg.role === "user") {
-          // Only remove the last user message
-          state.messages.pop();
-        }
-      } else if (msgCount === 1) {
-        state.messages.pop();
-      }
-      
-      // Reset last messages tracking
-      const remainingCount = state.messages.length;
-      if (remainingCount >= 2) {
-        const lastMsg = state.messages[remainingCount - 1];
-        const secondLastMsg = state.messages[remainingCount - 2];
-        state.lastBotResponse = lastMsg.role === "bot" ? lastMsg.text : null;
-        state.lastUserMessage = secondLastMsg.role === "user" ? secondLastMsg.text : null;
-      } else {
-        state.lastUserMessage = null;
-        state.lastBotResponse = null;
-      }
-    },
-    setIsLoading(state, action) {
-      state.isLoading = action.payload;
-    },
-    setShowInput(state, action) {
-      state.showInput = action.payload;
-    },
-    setPageContext(state, action) {
-      state.pageContext = action.payload;
-      state.pageContextId = action.payload?.id || null;
-      // Persist to localStorage
-      try {
-        localStorage.setItem(
-          "chatbot_page_context",
-          JSON.stringify(action.payload)
-        );
-      } catch (e) {
-        console.warn("Failed to save page context:", e);
-      }
-    },
-    clearPageContext(state) {
-      state.pageContext = null;
-      state.pageContextId = null;
-      try {
-        localStorage.removeItem("chatbot_page_context");
-      } catch (e) {
-        console.warn("Failed to clear page context:", e);
-      }
-    },
   },
 });
 
 export const {
-  addMessage,
   setInput,
-  toggleChat,
-  setConfig,
-  clearHistory,
+  setSuggestions,
+  selectSuggestion,
   setIsLoading,
-  setShowInput,
-  setPageContext,
-  clearPageContext,
-  removeLastMessages,
-} = chatSlice.actions;
+  setStatus,
+  setApiKey,
+  openModal,
+  closeModal,
+  clearSuggestions,
+  toggleChat,
+  closeChat,
+  setConfig,
+} = suggestSlice.actions;
 
-export const selectMessages = (state) => state.chat.messages;
-export const selectInput = (state) => state.chat.input;
-export const selectIsOpen = (state) => state.chat.isOpen;
-export const selectApiUrl = (state) => state.chat.apiUrl;
-export const selectApiKey = (state) => state.chat.apiKey;
-export const selectIsLoading = (state) => state.chat.isLoading;
-export const selectShowInput = (state) => state.chat.showInput;
-export const selectLastUserMessage = (state) => state.chat.lastUserMessage;
-export const selectLastBotResponse = (state) => state.chat.lastBotResponse;
-export const selectPageContext = (state) => state.chat.pageContext;
-export const selectPageContextId = (state) => state.chat.pageContextId;
+export const selectIsOpen = (state) => state.suggest.isOpen;
+export const selectInput = (state) => state.suggest.input;
+export const selectSuggestions = (state) => state.suggest.suggestions;
+export const selectSelectedIndex = (state) => state.suggest.selectedIndex;
+export const selectIsLoading = (state) => state.suggest.isLoading;
+export const selectStatus = (state) => state.suggest.status;
+export const selectApiUrl = (state) => state.suggest.apiUrl;
+export const selectApiKey = (state) => state.suggest.apiKey;
+export const selectModalItem = (state) => state.suggest.modalItem;
 
-export default chatSlice.reducer;
+export default suggestSlice.reducer;

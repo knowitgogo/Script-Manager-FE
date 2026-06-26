@@ -1,46 +1,51 @@
-import { getChatbotConfig } from "./config";
-import App from "./App";
+import { getSuggestConfig } from "./config";
+import SuggestIQWidget from "./SuggestIQWidget";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { setConfig } from "./store/chatSlice";
-import "./chat-theme.css";
+import { ThemeProvider } from "./context/ThemeContext";
+import { PageProvider } from "./context/PageContext";
+import "./SuggestIQ.css";
+import "./SuggestIQWidget.css";
 
 function injectFont() {
-  if (document.getElementById("montserrat-font")) return;
+  if (document.getElementById("siq-font")) return;
   const link = document.createElement("link");
-  link.id = "montserrat-font";
+  link.id = "siq-font";
   link.rel = "stylesheet";
   link.href =
-    "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap";
+    "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";
   document.head.appendChild(link);
 }
 
-export function mountChatbot() {
-  if (window.__TOKEN_MANAGER_CHATBOT_MOUNTED__) return;
+export function mountSuggestIQ() {
+  if (window.__SUGGESTIQ_MOUNTED__) return;
 
   if (!document.body) {
-    document.addEventListener("DOMContentLoaded", mountChatbot, { once: true });
+    document.addEventListener("DOMContentLoaded", mountSuggestIQ, { once: true });
     return;
   }
 
-  if (document.getElementById("chatbot-root")) return;
+  if (document.getElementById("siq-mount")) return;
 
   injectFont();
 
-  const config = getChatbotConfig();
+  const config = getSuggestConfig();
   store.dispatch(setConfig(config));
 
   const container = document.createElement("div");
-  container.id = "chatbot-root";
-  container.setAttribute("data-chatbot-mounted", "true");
-  container.setAttribute("data-theme", "light");
+  container.id = "siq-mount";
   document.body.appendChild(container);
 
   ReactDOM.createRoot(container).render(
     <Provider store={store}>
-      <App />
+      <ThemeProvider>
+        <PageProvider>
+          <SuggestIQWidget />
+        </PageProvider>
+      </ThemeProvider>
     </Provider>,
   );
-  window.__TOKEN_MANAGER_CHATBOT_MOUNTED__ = true;
+  window.__SUGGESTIQ_MOUNTED__ = true;
 }

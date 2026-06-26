@@ -1,19 +1,23 @@
-import { createContext, useContext, useState, useEffect } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from "react";
 
 const ThemeContext = createContext();
 
-export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState("dark");
+function getInitialTheme() {
+  try {
+    return localStorage.getItem("siq_theme") || "dark";
+  } catch {
+    return "dark";
+  }
+}
 
-  useEffect(() => {
-    const root = document.getElementById("chatbot-root");
-    if (root) {
-      root.setAttribute("data-theme", theme);
-    }
-  }, [theme]);
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState(getInitialTheme);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("siq_theme", newTheme);
   };
 
   return (
@@ -23,11 +27,6 @@ export function ThemeProvider({ children }) {
   );
 }
 
-// Custom hook to consume the theme context
 export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
-  }
-  return context;
+  return useContext(ThemeContext);
 }
