@@ -24,7 +24,7 @@ import { usePageContext } from "./context/PageContext";
 import "./SuggestIQ.css";
 
 const MAX_CHARS = 500;
-const MODEL_NAME = "gpt-4o-mini";
+const MODEL_NAME = "meta-llama/llama-4-scout-17b-16e-instruct";
 
 function typeIcon(type) {
   const map = {
@@ -41,22 +41,38 @@ function typeIcon(type) {
 function isOnPage(suggestion, pageItems) {
   if (!pageItems.length) return false;
   const name = (suggestion.name || "").toLowerCase().trim();
-  return pageItems.some(
-    (p) => (p.name || "").toLowerCase().trim() === name,
-  );
+  return pageItems.some((p) => (p.name || "").toLowerCase().trim() === name);
 }
 
 function highlightCardOnPage(suggestion) {
+  // Clear all highlights first
   document.querySelectorAll(".hotel-card.siq-highlighted").forEach((el) => {
     el.classList.remove("siq-highlighted");
   });
+
   if (!suggestion) return;
+
+  // Try ID-based match first (fast and exact)
+  if (suggestion.id !== null && suggestion.id !== undefined) {
+    const cards = document.querySelectorAll(".hotel-card");
+    const card = cards[suggestion.id];
+    if (card) {
+      card.classList.add("siq-highlighted");
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+  }
+
+  // Fallback: name-based match (in case id is missing)
   const name = (suggestion.name || "").toLowerCase().trim();
   document.querySelectorAll(".hotel-card").forEach((card) => {
-    const cardName = (card.querySelector(".hotel-name")?.textContent || "").toLowerCase().trim();
+    const cardName = (card.querySelector(".hotel-name")?.textContent || "")
+      .toLowerCase()
+      .trim();
+
     if (cardName === name) {
       card.classList.add("siq-highlighted");
-      card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   });
 }
@@ -136,10 +152,7 @@ function SuggestIQ() {
       const payload = { query: trimmed, pageContext: freshPageContext };
       console.log("[SuggestIQ] Sending request:", { apiUrl, payload });
 
-      const res = await axios.post(apiUrl,
-        payload,
-        { headers },
-      );
+      const res = await axios.post(apiUrl, payload, { headers });
 
       const data = res.data;
       console.log("[SuggestIQ] Response:", data);
@@ -383,7 +396,9 @@ function SuggestIQ() {
                   <p className="siq-detail-sub">
                     {selected.sub || ""}
                     {onPageSet.has(selected.name) && (
-                      <span className="siq-on-page-badge siq-on-page-badge-inline">On Page</span>
+                      <span className="siq-on-page-badge siq-on-page-badge-inline">
+                        On Page
+                      </span>
                     )}
                   </p>
                 </div>
@@ -462,7 +477,9 @@ function SuggestIQ() {
                 <p className="siq-modal-sub">
                   {modalItem.sub || ""}
                   {onPageSet.has(modalItem.name) && (
-                    <span className="siq-on-page-badge siq-on-page-badge-inline">On Page</span>
+                    <span className="siq-on-page-badge siq-on-page-badge-inline">
+                      On Page
+                    </span>
                   )}
                 </p>
               </div>

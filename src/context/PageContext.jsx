@@ -14,22 +14,33 @@ export function collectPageItems() {
       items = parsed?.itemListElement || parsed?.["@graph"] || parsed;
       if (Array.isArray(items) && items.length) return items;
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   try {
     const cards = document.querySelectorAll(".hotel-card");
     if (cards.length) {
       return Array.from(cards).map((card) => ({
         name: card.querySelector(".hotel-name")?.textContent?.trim() || "",
-        location: card.querySelector(".hotel-location")?.textContent?.replace("📍", "").trim() || "",
+        location:
+          card
+            .querySelector(".hotel-location")
+            ?.textContent?.replace("📍", "")
+            .trim() || "",
         rating: card.querySelector(".rating-value")?.textContent?.trim() || "",
         price: card.querySelector(".hotel-price")?.textContent?.trim() || "",
-        description: card.querySelector(".hotel-description")?.textContent?.trim() || "",
-        amenities: Array.from(card.querySelectorAll(".amenity-tag")).map((e) => e.textContent.trim()),
+        description:
+          card.querySelector(".hotel-description")?.textContent?.trim() || "",
+        amenities: Array.from(card.querySelectorAll(".amenity-tag")).map((e) =>
+          e.textContent.trim(),
+        ),
         superhost: !!card.querySelector(".superhost-indicator"),
       }));
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   return [];
 }
@@ -52,5 +63,9 @@ export function PageProvider({ children }) {
 }
 
 export function usePageContext() {
-  return useContext(PageContext);
+  const context = useContext(PageContext);
+  if (!context) {
+    throw new Error("usePageContext must be used within a PageProvider");
+  }
+  return context;
 }
