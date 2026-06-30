@@ -1,3 +1,3 @@
-import { mountChatbot } from "./mount.jsx";
+import { mountSuggestIQ } from "./mount.jsx";
 
-mountChatbot();
+mountSuggestIQ();

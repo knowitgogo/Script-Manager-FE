@@ -1,104 +1,123 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const loadMessages = () => {
+const loadApiKey = () => {
   try {
-    const saved = localStorage.getItem("chatbot_messages");
-    return saved ? JSON.parse(saved) : [];
+    return localStorage.getItem("siq_api_key") || "";
   } catch {
-    return [];
+    return "";
   }
 };
 
-const loadPageContext = () => {
+const loadJsonState = (key, defaultVal) => {
   try {
-    const saved = localStorage.getItem("chatbot_page_context");
-    return saved ? JSON.parse(saved) : null;
+    const val = localStorage.getItem(key);
+    if (val !== null) return JSON.parse(val);
+    return defaultVal;
   } catch {
-    return null;
+    return defaultVal;
   }
 };
 
-const chatSlice = createSlice({
-  name: "chat",
+const saveJsonState = (key, val) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (e) {
+    console.warn(`Failed to save ${key}:`, e);
+  }
+};
+
+const suggestSlice = createSlice({
+  name: "suggest",
   initialState: {
-    messages: loadMessages(),
-    input: "",
     isOpen: false,
-    showEmojiPicker: false,
-    apiUrl: "http://127.0.0.1:8000/user/chatbot/message",
-    apiKey: null,
+    apiUrl: "http://127.0.0.1:8000/suggest/generate",
+    apiKey: loadApiKey(),
+    input: loadJsonState("siq_input", ""),
     isLoading: false,
-    pageContext: loadPageContext(),
-    pageContextId: loadPageContext()?.id || null,
+    suggestions: loadJsonState("siq_suggestions", []),
+    selectedIndex: loadJsonState("siq_selected_index", -1),
+    status: loadJsonState("siq_status", {
+      dot: "idle",
+      text: "Awaiting your prompt above to produce curated cards",
+    }),
+    modalItem: null,
   },
   reducers: {
-    addMessage(state, action) {
-      state.messages.push(action.payload);
-    },
     setInput(state, action) {
       state.input = action.payload;
+      saveJsonState("siq_input", state.input);
+    },
+    setSuggestions(state, action) {
+      state.suggestions = action.payload;
+      saveJsonState("siq_suggestions", state.suggestions);
+    },
+    selectSuggestion(state, action) {
+      state.selectedIndex = action.payload;
+      saveJsonState("siq_selected_index", state.selectedIndex);
+    },
+    setIsLoading(state, action) {
+      state.isLoading = action.payload;
+    },
+    setStatus(state, action) {
+      state.status = action.payload;
+      saveJsonState("siq_status", state.status);
+    },
+    setApiKey(state, action) {
+      state.apiKey = action.payload;
+      try {
+        localStorage.setItem("siq_api_key", action.payload);
+      } catch (e) {
+        console.warn("Failed to save API key:", e);
+      }
+    },
+    openModal(state, action) {
+      state.modalItem = action.payload;
+    },
+    closeModal(state) {
+      state.modalItem = null;
+    },
+    clearSuggestions(state) {
+      state.suggestions = [];
+      state.selectedIndex = -1;
+      saveJsonState("siq_suggestions", state.suggestions);
+      saveJsonState("siq_selected_index", state.selectedIndex);
     },
     toggleChat(state) {
       state.isOpen = !state.isOpen;
     },
-    setShowEmojiPicker(state, action) {
-      state.showEmojiPicker = action.payload;
+    closeChat(state) {
+      state.isOpen = false;
     },
     setConfig(state, action) {
       state.apiUrl = action.payload.apiUrl || state.apiUrl;
       state.apiKey = action.payload.apiKey || state.apiKey;
     },
-    clearHistory(state) {
-      state.messages = [];
-    },
-    setIsLoading(state, action) {
-      state.isLoading = action.payload;
-    },
-    setPageContext(state, action) {
-      state.pageContext = action.payload;
-      state.pageContextId = action.payload?.id || null;
-      // Persist to localStorage
-      try {
-        localStorage.setItem(
-          "chatbot_page_context",
-          JSON.stringify(action.payload)
-        );
-      } catch (e) {
-        console.warn("Failed to save page context:", e);
-      }
-    },
-    clearPageContext(state) {
-      state.pageContext = null;
-      state.pageContextId = null;
-      try {
-        localStorage.removeItem("chatbot_page_context");
-      } catch (e) {
-        console.warn("Failed to clear page context:", e);
-      }
-    },
   },
 });
 
 export const {
-  addMessage,
   setInput,
-  toggleChat,
-  setShowEmojiPicker,
-  setConfig,
-  clearHistory,
+  setSuggestions,
+  selectSuggestion,
   setIsLoading,
-  setPageContext,
-  clearPageContext,
-} = chatSlice.actions;
+  setStatus,
+  setApiKey,
+  openModal,
+  closeModal,
+  clearSuggestions,
+  toggleChat,
+  closeChat,
+  setConfig,
+} = suggestSlice.actions;
 
-export const selectMessages = (state) => state.chat.messages;
-export const selectInput = (state) => state.chat.input;
-export const selectIsOpen = (state) => state.chat.isOpen;
-export const selectShowEmojiPicker = (state) => state.chat.showEmojiPicker;
-export const selectApiUrl = (state) => state.chat.apiUrl;
-export const selectApiKey = (state) => state.chat.apiKey;
-export const selectIsLoading = (state) => state.chat.isLoading;
-export const selectPageContext = (state) => state.chat.pageContext;
-export const selectPageContextId = (state) => state.chat.pageContextId;
+export const selectIsOpen = (state) => state.suggest.isOpen;
+export const selectInput = (state) => state.suggest.input;
+export const selectSuggestions = (state) => state.suggest.suggestions;
+export const selectSelectedIndex = (state) => state.suggest.selectedIndex;
+export const selectIsLoading = (state) => state.suggest.isLoading;
+export const selectStatus = (state) => state.suggest.status;
+export const selectApiUrl = (state) => state.suggest.apiUrl;
+export const selectApiKey = (state) => state.suggest.apiKey;
+export const selectModalItem = (state) => state.suggest.modalItem;
 
-export default chatSlice.reducer;
+export default suggestSlice.reducer;
